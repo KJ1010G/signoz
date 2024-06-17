@@ -38,6 +38,7 @@ export const getListColumns = (
 						: dayjs(item / 1e6).format('YYYY-MM-DD HH:mm:ss.SSS');
 				return <Typography.Text>{date}</Typography.Text>;
 			},
+			sorter: true,
 		},
 	];
 
@@ -67,6 +68,10 @@ export const getListColumns = (
 				return <Typography data-testid={key}>{value}</Typography>;
 			},
 			responsive: ['md'],
+			sorter:
+				key === 'durationNano'
+					? (a, b): number => Number(a.durationNano) - Number(b.durationNano)
+					: undefined,
 		})) || [];
 
 	return [...initialColumns, ...columns];
