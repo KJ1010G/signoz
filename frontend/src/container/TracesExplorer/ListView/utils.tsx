@@ -7,6 +7,7 @@ import dayjs from 'dayjs';
 import { RowData } from 'lib/query/createTableColumnsFromQuery';
 import { ILog } from 'types/api/logs/log';
 import { BaseAutocompleteData } from 'types/api/queryBuilder/queryAutocompleteResponse';
+import { OrderByPayload } from 'types/api/queryBuilder/queryBuilderData';
 import { QueryDataV3 } from 'types/api/widgets/getQuery';
 
 export const transformDataWithDate = (
@@ -24,6 +25,7 @@ export const getTraceLink = (record: RowData): string =>
 
 export const getListColumns = (
 	selectedColumns: BaseAutocompleteData[],
+	orderByFromQuery?: OrderByPayload[],
 ): ColumnsType<RowData> => {
 	const initialColumns: ColumnsType<RowData> = [
 		{
@@ -39,10 +41,18 @@ export const getListColumns = (
 				return <Typography.Text>{date}</Typography.Text>;
 			},
 			sorter: true,
+			sortOrder: (orderByFromQuery || [])?.map((order) => {
+				console.log(order);
+				if (order.columnName === 'timestamp') {
+					return order.order === 'asc' ? 'ascend' : 'descend';
+				}
+				return undefined;
+			})?.[0],
 		},
 	];
 
 	const columns: ColumnsType<RowData> =
+		// eslint-disable-next-line sonarjs/cognitive-complexity
 		selectedColumns.map(({ dataType, key, type }) => ({
 			title: key,
 			dataIndex: key,
@@ -69,6 +79,16 @@ export const getListColumns = (
 			},
 			responsive: ['md'],
 			sorter: key === 'durationNano' ? true : undefined,
+			sortOrder:
+				key === 'durationNano'
+					? (orderByFromQuery || [])?.map((order) => {
+							console.log(order);
+							if (order.columnName === 'durationNano') {
+								return order.order === 'asc' ? 'ascend' : 'descend';
+							}
+							return undefined;
+					  })?.[0]
+					: undefined,
 		})) || [];
 
 	return [...initialColumns, ...columns];
