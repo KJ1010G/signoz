@@ -68,10 +68,7 @@ export const getListColumns = (
 				return <Typography data-testid={key}>{value}</Typography>;
 			},
 			responsive: ['md'],
-			sorter:
-				key === 'durationNano'
-					? (a, b): number => Number(a.durationNano) - Number(b.durationNano)
-					: undefined,
+			sorter: key === 'durationNano' ? true : undefined,
 		})) || [];
 
 	return [...initialColumns, ...columns];
